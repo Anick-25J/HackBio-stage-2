@@ -1,0 +1,63 @@
+# Task 2.6
+# Stage 2 task
+# import package
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# import dataframe
+data_source = "https://gist.githubusercontent.com/stephenturner/806e31fce55a8b7175af/raw/1a507c4c3f9f1baaa3a69187223ff3d3050628d4/results.txt"
+df = pd.read_csv(data_source, delim_whitespace=True)
+
+print(df.head(5))
+print(df.tail(5))
+print(df.info())
+
+# Define significance thresholds
+df['Significance'] = 'Not Significant'
+df.loc[(df['log2FoldChange'] > 1) & (df['pvalue'] < 0.01), 'Significance'] = 'Upregulated'
+df.loc[(df['log2FoldChange'] < -1) & (df['pvalue'] < 0.01), 'Significance'] = 'Downregulated'
+
+# Plot
+plt.figure(figsize=(10, 6))
+sns.scatterplot(
+    x=df['log2FoldChange'], 
+    y=-np.log10(df['pvalue']), 
+    hue=df['Significance'],
+    palette={'Upregulated': 'red', 'Downregulated': 'blue', 'Not Significant': 'grey'},
+    alpha=0.7
+)
+
+upregulated = df[(df['log2FoldChange'] > 1) & (df['pvalue'] < 0.01)]
+downregulated = df[(df['log2FoldChange'] < -1) & (df['pvalue'] < 0.01)]
+
+# Display the top genes
+    # Upregulated
+print("Top 5 Upregulated Genes:")
+print(upregulated[['Gene', 'log2FoldChange', 'pvalue']].head())
+
+    # Downregulated
+print("\nTop 5 Downregulated Genes:")
+print(downregulated[['Gene', 'log2FoldChange', 'pvalue']].head())
+
+# Gene functions
+
+Upregulated_gene_function = {
+    "EMILIN2" : "cell adhesive capacity",
+    "POU3F4" : "transcription factor",
+    "LOC28595" : " RNA Gene, and is affiliated with the lncRNA class." ,
+    "VEPH1" : "Protein Coding gene Interacts with TGFBR1 and inhibits dissociation of activated SMAD2 from TGFBR1",
+    "DTHD1" : "signaling pathways and formation of signaling complexes, as well as the apoptosis pathway"
+}
+
+
+Downregulated_gene_function = {
+    "TBX5" : "Regulation of the transcription of several genes and is involved in heart development and limb pattern formation",
+    "IFITM1" : "IFN-induced antiviral protein which inhibits the entry of viruses to the host cell cytoplasm, permitting endocytosis, but preventing subsequent viral fusion and release of viral contents into the cytosol",
+    "LAMA2" : "mediate the attachment, migration and organization of cells into tissues during embryonic development by interacting with other extracellular matrix components",
+    "CAV2" : "Interacts directly with G-protein alpha subunits and can functionally regulate their activity",
+    "TNN" : " Involved in neurite outgrowth and cell migration in hippocampal explants (By similarity). During endochondral bone formation, inhibits proliferation and differentiation of proteoblasts mediated by canonical WNT signaling"
+}
+ print(Upregulated_gene_function)
+print(downregulated_gene_function)
